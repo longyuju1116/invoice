@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  request-payment:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - HOST=0.0.0.0
+      - PORT=7860
+    volumes:
+      - ./uploads:/app/uploads
+      - ./static:/app/static
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 

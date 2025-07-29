@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上請款單系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, Arial, sans-serif;
+            line-height: 1.47059;
+            color: #1d1d1f;
+            background-color: #f5f5f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        .header {
+            background: #000000;
+            color: #f5f5f7;
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            margin: 0 0 12px 0;
+        }
+
+        .header p {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: .016em;
+            margin: 0 0 24px 0;
+            opacity: 0.8;
+        }
+
+        .form-section {
+            background: #ffffff;
+            padding: 40px;
+            margin-bottom: 40px;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .form-section h2 {
+            color: #1d1d1f;
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -.005em;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 17px;
+            font-family: inherit;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #a1a1a6;
+        }
+
+        .payment-details {
+            overflow-x: auto;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .details-table th,
+        .details-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .details-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #007aff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 980px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 400;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            display: inline-block;
+            text-decoration: none;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #0051d5;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8e8e93;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #636366;
+        }
+
+        .btn-danger {
+            background: #ff3b30;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background: #d70015;
+        }
+
+        .total-amount {
+            font-size: 21px;
+            font-weight: 600;
+            color: #007aff;
+            text-align: right;
+            padding: 20px;
+            background-color: #f5f5f7;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
+        .file-upload-area {
+            border: 2px dashed #007aff;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 17px;
+        }
+
+        .file-upload-area:hover {
+            background-color: #f0f8ff;
+            border-color: #0051d5;
+            transform: translateY(-2px);
+        }
+
+        .preview-section {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-top: 40px;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .details-table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>線上請款單系統</h1>
+            <p>快速建立、預覽並匯出請款單 PDF</p>
+        </div>
+
+        <form id="paymentForm">
+            <!-- 基本資訊 -->
+            <div class="form-section">
+                <h2>基本資訊</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicationDate">申請日期 (民國年格式，例：111.11.11)</label>
+                        <input type="text" id="applicationDate" name="applicationDate" 
+                               placeholder="例：111.11.11" pattern="\d{1,3}\.\d{1,2}\.\d{1,2}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="payee">受款人 *</label>
+                        <input type="text" id="payee" name="payee" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paymentMethod">付款方式 *</label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">請選擇付款方式</option>
+                            <option value="現金">現金</option>
+                            <option value="匯款">匯款</option>
+                            <option value="轉捐款">轉捐款</option>
+                            <option value="預支">預支</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group hidden" id="paymentMethodOtherGroup">
+                        <label for="paymentMethodOther">其他付款方式說明 *</label>
+                        <input type="text" id="paymentMethodOther" name="paymentMethodOther">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requestingUnit">請款單位 *</label>
+                        <select id="requestingUnit" name="requestingUnit" required>
+                            <option value="">請選擇請款單位</option>
+                            <option value="輔導活動執委會">輔導活動執委會</option>
+                            <option value="行政財務執委會">行政財務執委會</option>
+                            <option value="資訊媒體執委會">資訊媒體執委會</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group hidden" id="requestingUnitOtherGroup">
+                        <label for="requestingUnitOther">其他請款單位說明 *</label>
+                        <input type="text" id="requestingUnitOther" name="requestingUnitOther">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 請款明細 -->
+            <div class="form-section">
+                <h2>請款明細</h2>
+                
+                <div class="payment-details">
+                    <table class="details-table" id="detailsTable">
+                        <thead>
+                            <tr>
+                                <th>專案</th>
+                                <th>費用類型</th>
+                                <th>執行時間</th>
+                                <th>執行內容</th>
+                                <th>金額</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailsTableBody">
+                            <!-- 動態生成的行 -->
+                        </tbody>
+                    </table>
+                    
+                    <button type="button" class="btn" onclick="addDetailRow()">新增明細</button>
+                    
+                    <div class="total-amount" id="totalAmount">
+                        請款總金額：NT$ 0
+                    </div>
+                </div>
+            </div>
+
+            <!-- 存摺影本上傳 -->
+            <div class="form-section hidden" id="bankBookSection">
+                <h2>存摺影本上傳</h2>
+                <p style="margin-bottom: 1rem; color: #666;">
+                    您選擇了匯款或預支付款方式，請上傳存摺影本 (支援 JPG、PNG、GIF 格式，檔案大小需小於 5MB)
+                </p>
+                
+                <div class="file-upload-area" onclick="document.getElementById('bankBookFile').click()" 
+                     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                    <p>點擊此處選擇檔案或拖拽檔案到此處</p>
+                    <p id="uploadedFileName" style="margin-top: 0.5rem; color: #007aff; font-weight: bold;"></p>
+                </div>
+                <input type="file" id="bankBookFile" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- 提交按鈕 -->
+            <div class="form-section">
+                <div id="errorMessage" class="error-message hidden"></div>
+                <div id="successMessage" class="success-message hidden"></div>
+                
+                <button type="submit" class="btn">預覽並生成 PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">重設表單</button>
+            </div>
+        </form>
+
+        <!-- 預覽區域 -->
+        <div id="previewSection" class="preview-section hidden">
+            <h2>請款單預覽</h2>
+            <div id="previewContent"></div>
+            <div style="margin-top: 1rem;">
+                <button type="button" class="btn" onclick="downloadPDF()">下載 PDF</button>
+                <button type="button" class="btn btn-secondary" onclick="hidePreview()">隱藏預覽</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let paymentRequestId = null;
+        let uploadedFileId = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            addDetailRow(); // 添加第一行明細
+            
+            // 監聽付款方式變更
+            document.getElementById('paymentMethod').addEventListener('change', function() {
+                handlePaymentMethodChange();
+            });
+            
+            // 監聽請款單位變更
+            document.getElementById('requestingUnit').addEventListener('change', function() {
+                handleRequestingUnitChange();
+            });
+            
+            // 監聽檔案上傳
+            document.getElementById('bankBookFile').addEventListener('change', function() {
+                handleFileUpload();
+            });
+            
+            // 監聽表單提交
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm();
+            });
+        });
+
+        // 處理付款方式變更
+        function handlePaymentMethodChange() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const otherGroup = document.getElementById('paymentMethodOtherGroup');
+            const bankBookSection = document.getElementById('bankBookSection');
+            
+            if (paymentMethod === '其他') {
+                otherGroup.classList.remove('hidden');
+                document.getElementById('paymentMethodOther').required = true;
+            } else {
+                otherGroup.classList.add('hidden');
+                document.getElementById('paymentMethodOther').required = false;
+                document.getElementById('paymentMethodOther').value = '';
+            }
+            
+            // 顯示/隱藏存摺影本上傳區域
+            if (paymentMethod === '匯款' || paymentMethod === '預支') {
+                bankBookSection.classList.remove('hidden');
+            } else {
+                bankBookSection.classList.add('hidden');
+                uploadedFileId = null;
+                document.getElementById('uploadedFileName').textContent = '';
+            }
+        }
+
+        // 處理請款單位變更
+        function handleRequestingUnitChange() {
+            const requestingUnit = document.getElementById('requestingUnit').value;
+            const otherGroup = document.getElementById('requestingUnitOtherGroup');
+            
+            if (requestingUnit === '其他') {
+                otherGroup.classList.remove('hidden');
+                document.getElementById('requestingUnitOther').required = true;
+            } else {
+                otherGroup.classList.add('hidden');
+                document.getElementById('requestingUnitOther').required = false;
+                document.getElementById('requestingUnitOther').value = '';
+            }
+        }
+
+        // 新增明細行
+        function addDetailRow() {
+            const tbody = document.getElementById('detailsTableBody');
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>
+                    <select class="project-type" onchange="updateTotal()">
+                        <option value="">請選擇</option>
+                        <option value="A.會議(理監事會議、審查會議、幹事會議等)">A.會議(理監事會議、審查會議、幹事會議等)</option>
+                        <option value="B.活動(含年會、各項座談會、年度志工激勵活動、各區學生輔導活動等)">B.活動(含年會、各項座談會、年度志工激勵活動、各區學生輔導活動等)</option>
+                        <option value="C.志工培訓(含志工會議)">C.志工培訓(含志工會議)</option>
+                        <option value="D.學校訪談">D.學校訪談</option>
+                        <option value="E.專案補助">E.專案補助</option>
+                        <option value="F.其他">F.其他</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="expense-type" onchange="updateTotal()">
+                        <option value="">請選擇</option>
+                        <option value="1.交通費">1.交通費</option>
+                        <option value="2.場地租借">2.場地租借</option>
+                        <option value="3.餐費">3.餐費</option>
+                        <option value="4.文宣">4.文宣</option>
+                        <option value="5.電話費">5.電話費</option>
+                        <option value="6.補助">6.補助</option>
+                        <option value="7.志工津貼">7.志工津貼</option>
+                        <option value="8.設備器材(含軟硬體)">8.設備器材(含軟硬體)</option>
+                        <option value="9.雜支">9.雜支</option>
+                    </select>
+                </td>
+                <td><input type="text" class="execution-time" placeholder="執行時間"></td>
+                <td><input type="text" class="execution-content" placeholder="執行內容" required></td>
+                <td><input type="number" class="amount" placeholder="金額" min="0" step="1" onchange="updateTotal()" required></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeDetailRow(this)">刪除</button></td>
+            `;
+            
+            tbody.appendChild(row);
+            updateTotal();
+        }
+
+        // 刪除明細行
+        function removeDetailRow(button) {
+            const tbody = document.getElementById('detailsTableBody');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                updateTotal();
+            } else {
+                showError('至少需要保留一筆明細');
+            }
+        }
+
+        // 更新總金額
+        function updateTotal() {
+            const amounts = document.querySelectorAll('.amount');
+            let total = 0;
+            
+            amounts.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+            
+            document.getElementById('totalAmount').textContent = 
+                `請款總金額：NT$ ${total.toLocaleString('zh-TW')}`;
+        }
+
+        // 處理拖拽事件
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+        }
+
+        function handleDragEnter(event) {
+            event.preventDefault();
+            event.target.closest('.file-upload-area').style.backgroundColor = '#f0f8ff';
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            if (!event.target.closest('.file-upload-area').contains(event.relatedTarget)) {
+                event.target.closest('.file-upload-area').style.backgroundColor = '#f8f9ff';
+            }
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.target.closest('.file-upload-area').style.backgroundColor = '#f8f9ff';
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const fileInput = document.getElementById('bankBookFile');
+                fileInput.files = files;
+                handleFileUpload();
+            }
+        }
+
+        // 處理檔案上傳
+        async function handleFileUpload() {
+            const fileInput = document.getElementById('bankBookFile');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            // 檢查檔案大小 (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError('檔案大小不可超過 5MB');
+                fileInput.value = '';
+                return;
+            }
+            
+            // 檢查檔案類型
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('僅支援 JPG、PNG、GIF 格式的圖片檔案');
+                fileInput.value = '';
+                return;
+            }
+            
+            try {
+                // 直接將檔案轉換為 base64
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result.split(',')[1]; // 移除 data:image/...;base64, 前綴
+                    uploadedFileId = base64String;
+                    document.getElementById('uploadedFileName').textContent = `已上傳：${file.name}`;
+                    showSuccess('檔案處理成功');
+                };
+                reader.onerror = function() {
+                    showError('檔案讀取失敗');
+                    fileInput.value = '';
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                showError('檔案處理失敗：' + error.message);
+                fileInput.value = '';
+            }
+        }
+
+        // 提交表單
+        async function submitForm() {
+            try {
+                // 收集表單數據
+                const formData = collectFormData();
+                
+                // 驗證數據
+                if (!validateFormData(formData)) {
+                    return;
+                }
+                
+                // 顯示加載狀態
+                showLoading();
+                
+                // 提交到後端
+                const response = await fetch('/api/v1/request-forms/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '提交失敗');
+                }
+                
+                const result = await response.json();
+                paymentRequestId = result.id;
+                
+                // 顯示預覽
+                showPreview(result);
+                showSuccess('請款單建立成功！');
+                
+            } catch (error) {
+                showError('提交失敗：' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 收集表單數據
+        function collectFormData() {
+            const details = [];
+            const rows = document.querySelectorAll('#detailsTableBody tr');
+            
+            rows.forEach(row => {
+                const projectType = row.querySelector('.project-type').value;
+                const expenseType = row.querySelector('.expense-type').value;
+                const executionTime = row.querySelector('.execution-time').value;
+                const executionContent = row.querySelector('.execution-content').value;
+                const amount = parseFloat(row.querySelector('.amount').value) || 0;
+                
+                if (projectType && expenseType && executionContent && amount > 0) {
+                    details.push({
+                        project_type: projectType,
+                        expense_type: expenseType,
+                        execution_time: executionTime,
+                        execution_content: executionContent,
+                        amount: amount
+                    });
+                }
+            });
+            
+            return {
+                application_date: document.getElementById('applicationDate').value,
+                payee: document.getElementById('payee').value,
+                payment_method: document.getElementById('paymentMethod').value,
+                payment_method_other: document.getElementById('paymentMethodOther').value || null,
+                requesting_unit: document.getElementById('requestingUnit').value,
+                requesting_unit_other: document.getElementById('requestingUnitOther').value || null,
+                payment_details: details,
+                bank_book_image: uploadedFileId || null
+            };
+        }
+
+        // 驗證表單數據
+        function validateFormData(data) {
+            if (!data.application_date) {
+                showError('請填寫申請日期');
+                document.getElementById('applicationDate').focus();
+                document.getElementById('applicationDate').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            if (!data.payee) {
+                showError('請填寫受款人');
+                document.getElementById('payee').focus();
+                document.getElementById('payee').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            if (!data.payment_method) {
+                showError('請選擇付款方式');
+                document.getElementById('paymentMethod').focus();
+                document.getElementById('paymentMethod').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            if (!data.requesting_unit) {
+                showError('請選擇請款單位');
+                document.getElementById('requestingUnit').focus();
+                document.getElementById('requestingUnit').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            
+            // 檢查請款明細中的專案和費用類型
+            const rows = document.querySelectorAll('#detailsTableBody tr');
+            let hasValidDetail = false;
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const projectType = row.querySelector('.project-type');
+                const expenseType = row.querySelector('.expense-type');
+                const executionContent = row.querySelector('.execution-content');
+                const amount = row.querySelector('.amount');
+                
+                // 檢查是否有任何欄位已填寫
+                const hasAnyContent = projectType.value || expenseType.value || executionContent.value || amount.value;
+                
+                if (hasAnyContent) {
+                    // 如果有任何欄位已填寫，則檢查必填欄位
+                    if (!projectType.value) {
+                        showError('請選擇專案類型');
+                        projectType.focus();
+                        projectType.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                    
+                    if (!expenseType.value) {
+                        showError('請選擇費用類型');
+                        expenseType.focus();
+                        expenseType.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                    
+                    if (!executionContent.value) {
+                        showError('請填寫執行內容');
+                        executionContent.focus();
+                        executionContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                    
+                    if (!amount.value || parseFloat(amount.value) <= 0) {
+                        showError('請填寫金額');
+                        amount.focus();
+                        amount.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                    
+                    hasValidDetail = true;
+                }
+            }
+            
+            if (!hasValidDetail) {
+                showError('請至少新增一筆請款明細');
+                return false;
+            }
+            
+            // 檢查匯款或預支是否有上傳存摺影本
+            if ((data.payment_method === '匯款' || data.payment_method === '預支') && !data.bank_book_image) {
+                showError('匯款或預支付款方式需要上傳存摺影本');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // 顯示預覽
+        function showPreview(data) {
+            const previewContent = document.getElementById('previewContent');
+            const total = data.payment_details.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+            
+            previewContent.innerHTML = `
+                <h3>請款單資訊</h3>
+                <p><strong>申請日期：</strong>${data.application_date || '（未填寫）'}</p>
+                <p><strong>受款人：</strong>${data.payee}</p>
+                <p><strong>付款方式：</strong>${data.payment_method}${data.payment_method_other ? ` (${data.payment_method_other})` : ''}</p>
+                <p><strong>請款單位：</strong>${data.requesting_unit}${data.requesting_unit_other ? ` (${data.requesting_unit_other})` : ''}</p>
+                <p><strong>請款總金額：</strong>NT$ ${total.toLocaleString('zh-TW')}</p>
+                
+                <h4 style="margin-top: 1rem;">請款明細</h4>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>專案</th>
+                            <th>費用類型</th>
+                            <th>執行時間</th>
+                            <th>執行內容</th>
+                            <th>金額</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.payment_details.map(item => `
+                            <tr>
+                                <td>${item.project_type}</td>
+                                <td>${item.expense_type}</td>
+                                <td>${item.execution_time || ''}</td>
+                                <td>${item.execution_content}</td>
+                                <td>NT$ ${parseFloat(item.amount).toLocaleString('zh-TW')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('previewSection').classList.remove('hidden');
+            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 下載 PDF
+        async function downloadPDF() {
+            if (!paymentRequestId) {
+                showError('沒有可下載的請款單');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/request-forms/${paymentRequestId}/pdf`);
+                
+                if (!response.ok) {
+                    throw new Error('PDF 生成失敗');
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                
+                // 直接使用時間戳生成檔案名稱，與後端保持一致
+                const now = new Date();
+                const timestamp = now.getFullYear().toString() + 
+                    (now.getMonth() + 1).toString().padStart(2, '0') + 
+                    now.getDate().toString().padStart(2, '0') + '_' +
+                    now.getHours().toString().padStart(2, '0') + 
+                    now.getMinutes().toString().padStart(2, '0') + 
+                    now.getSeconds().toString().padStart(2, '0');
+                
+                const filename = `${timestamp}.pdf`;
+                console.log('Generated filename:', filename); // 調試用
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccess('PDF 下載成功');
+                
+            } catch (error) {
+                showError('PDF 下載失敗：' + error.message);
+            }
+        }
+
+        // 隱藏預覽
+        function hidePreview() {
+            document.getElementById('previewSection').classList.add('hidden');
+        }
+
+        // 重設表單
+        function resetForm() {
+            if (confirm('確定要重設表單嗎？所有資料將會遺失。')) {
+                document.getElementById('paymentForm').reset();
+                document.getElementById('detailsTableBody').innerHTML = '';
+                addDetailRow();
+                updateTotal();
+                hidePreview();
+                hideError();
+                hideSuccess();
+                paymentRequestId = null;
+                uploadedFileId = null;
+                document.getElementById('uploadedFileName').textContent = '';
+                document.getElementById('paymentMethodOtherGroup').classList.add('hidden');
+                document.getElementById('requestingUnitOtherGroup').classList.add('hidden');
+                document.getElementById('bankBookSection').classList.add('hidden');
+            }
+        }
+
+        // 顯示錯誤訊息
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            hideSuccess();
+        }
+
+        // 隱藏錯誤訊息
+        function hideError() {
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        // 顯示成功訊息
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            hideError();
+        }
+
+        // 隱藏成功訊息
+        function hideSuccess() {
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        // 顯示加載狀態
+        function showLoading() {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '處理中...';
+            submitBtn.disabled = true;
+        }
+
+        // 隱藏加載狀態
+        function hideLoading() {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '預覽並生成 PDF';
+            submitBtn.disabled = false;
+        }
+    </script>
+</body>
+</html> 
