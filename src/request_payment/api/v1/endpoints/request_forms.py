@@ -123,15 +123,6 @@ async def download_payment_request_pdf(request_id: str):
         pdf_content = pdf_buffer.getvalue()
         print(f"PDF生成成功，大小: {len(pdf_content)} bytes")
         
-        # 同時儲存PDF到images資料夾
-        images_dir = Path("uploads/images")
-        images_dir.mkdir(parents=True, exist_ok=True)
-        
-        pdf_file_path = images_dir / filename
-        with open(pdf_file_path, "wb") as f:
-            f.write(pdf_content)
-        print(f"PDF已儲存到: {pdf_file_path}")
-        
         # URL編碼中文檔名以避免編碼問題
         encoded_filename = urllib.parse.quote(filename, safe='')
         
@@ -153,7 +144,15 @@ async def download_payment_request_pdf(request_id: str):
         print(f"PDF生成失敗: {str(e)}")
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"生成 PDF 失敗: {str(e)}")
+        
+        # 提供更詳細的錯誤信息
+        error_detail = f"PDF生成失敗: {str(e)}"
+        if "Permission denied" in str(e):
+            error_detail = "PDF生成失敗: 文件權限問題，請檢查目錄權限"
+        elif "font" in str(e).lower():
+            error_detail = "PDF生成失敗: 字體載入問題，請檢查字體文件"
+        
+        raise HTTPException(status_code=500, detail=error_detail)
 
 
 @router.get("/")

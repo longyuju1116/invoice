@@ -29,9 +29,6 @@ COPY . .
 # 創建必要的目錄
 RUN mkdir -p uploads/images uploads/temp static
 
-# 設置權限
-RUN chmod +x /app/src/request_payment/main.py
-
 # 暴露端口
 EXPOSE 7860
 

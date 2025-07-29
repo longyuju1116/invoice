@@ -39,14 +39,17 @@ class PDFService:
             font_name = "Chinese-Font"
             
             # 優先使用用戶提供的標楷體字體
-            custom_font_path = "./edukai-5.0.ttf"
-            if os.path.exists(custom_font_path):
-                try:
-                    pdfmetrics.registerFont(TTFont(font_name, custom_font_path))
-                    font_registered = True
-                    print(f"成功註冊標楷體字體: {custom_font_path}")
-                except Exception as e:
-                    print(f"標楷體字體註冊失敗: {e}")
+            custom_font_paths = ["./edukai-5.0.ttf", "/app/edukai-5.0.ttf"]
+            for custom_font_path in custom_font_paths:
+                if os.path.exists(custom_font_path):
+                    try:
+                        pdfmetrics.registerFont(TTFont(font_name, custom_font_path))
+                        font_registered = True
+                        print(f"成功註冊標楷體字體: {custom_font_path}")
+                        break
+                    except Exception as e:
+                        print(f"標楷體字體註冊失敗: {e}")
+                        continue
             
             # 如果標楷體註冊失敗，使用系統字體
             if not font_registered:
@@ -151,8 +154,14 @@ class PDFService:
             
             # 在左上角添加mark.jpg圖片（等比例調整為高度2cm）
             try:
-                mark_path = "./mark.jpg"
-                if os.path.exists(mark_path):
+                mark_paths = ["./mark.jpg", "/app/mark.jpg"]
+                mark_path = None
+                for path in mark_paths:
+                    if os.path.exists(path):
+                        mark_path = path
+                        break
+                
+                if mark_path:
                     # 載入圖片並獲取原始尺寸
                     pil_image = PILImage.open(mark_path)
                     original_width, original_height = pil_image.size
